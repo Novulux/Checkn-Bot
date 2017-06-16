@@ -9,4 +9,4 @@ skill_module.js handles setting an appointment with validation of user input and
 viewappointments.js handles the display of appointments for that user as well as selected deletions or updates. 
 RUNNING HERE: glitch.com/edit/#!/sweltering-bit
 
-same conversation scripts should work (conversations triggers and intent setup on Botkit studio). Change bot type in bot.js and env files to use other services like slack. Middleware for api.ai available but we couldnt implement in time. 
+same conversation scripts should work (conversations triggers and intent setup on Botkit studio) for other services. Change bot type in bot.js and env files to use other services like slack. Middleware for api.ai available but we couldnt implement in time. 
