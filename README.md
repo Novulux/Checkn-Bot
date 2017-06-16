@@ -28,4 +28,4 @@ PORT=3000
 ```
 Setup the Facebook page with webhook url, for example I had: https://sweltering-bit.glitch.me/facebook/receive and the verify_token.
 
-Middleware for api.ai available but we couldn't implement in time. 
+There is middleware for api.ai available for Botkit but we couldn't implement in time. 
