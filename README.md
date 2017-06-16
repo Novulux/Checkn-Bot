@@ -12,6 +12,7 @@ Right now making appointments has validation for whether a company actually uses
 I am using https://glitch.com/edit/#!/sweltering-bit to host. 
 
 **Skills**:
+
 skill_module.js handles setting an appointment with validation of some user input and database storage. Also handles setting the variables that are displayed back to user in a readable format. appointments.json can be imported into Botkit for use with this script.
 
 viewappointments.js handles the display of appointments for that user as well as selected deletions or updates to appointments. viewappointments.json can be imported into Botkit studio for use with this script. 
