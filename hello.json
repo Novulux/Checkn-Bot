@@ -1,0 +1,82 @@
+[
+    {
+        "command": "fb hello",
+        "description": "Respond when a human says hello!",
+        "triggers": [
+            {
+                "pattern": "Get Started",
+                "type": "string",
+                "id": 257
+            },
+            {
+                "pattern": "say hello",
+                "type": "intent",
+                "id": 74
+            },
+            {
+                "pattern": "new",
+                "type": "string",
+                "id": 83
+            },
+            {
+                "pattern": "restart",
+                "type": "string",
+                "id": 358
+            },
+            {
+                "type": "string",
+                "pattern": "hello"
+            },
+            {
+                "type": "string",
+                "pattern": "hey"
+            },
+            {
+                "type": "string",
+                "pattern": "hi"
+            },
+            {
+                "type": "string",
+                "pattern": "howdy"
+            }
+        ],
+        "variables": [],
+        "script": [
+            {
+                "topic": "default",
+                "script": [
+                    {
+                        "text": [
+                            "Hello Human!",
+                            "How do you do?",
+                            "Nice to meet you Human.",
+                            "Hi!",
+                            "How’s it going?",
+                            "Hey!",
+                            "Hey there!",
+                            "Howdy!",
+                            "G`day human!",
+                            "Salut!",
+                            "Ciao!",
+                            "Hola!",
+                            "Shalom!"
+                        ]
+                    },
+                    {
+                        "text": [
+                            "Would you like to make an appointment?"
+                        ]
+                    },
+                    {
+                        "action": "complete"
+                    }
+                ]
+            }
+        ],
+        "prehooks": [],
+        "posthooks": [],
+        "created": "2017-06-01T17:30:00+00:00",
+        "modified": "Fri Jun 16 2017 09:51:22 GMT+0000 (UTC)",
+        "ownerId": "WTBPGE7O0zh4b/8K"
+    }
+]
