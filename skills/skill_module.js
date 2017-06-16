@@ -5,6 +5,7 @@ Botkit Studio Skill module to enhance the "Appointment" script
 */
 var Appointment = require('../models/Appointment');
 var Company = require('../models/Company');
+var moment = require('moment-timezone');
 
 module.exports = function(controller) {
     // define a before hook
@@ -47,16 +48,6 @@ module.exports = function(controller) {
 
         var value = convo.extractResponse('provider');
       
-    /*  Appointment.findOne({ first_name: 'Ronald' }, function (err, appointment) {
-        if (err) {
-          console.err(err);
-        }
-        else{
-          console.log("here");
-          console.log(appointment);
-          console.log(appointment.date);
-        }
-      });*/
         // test or validate value somehow
         // can call convo.gotoThread() to change direction of conversation
 
@@ -66,7 +57,10 @@ module.exports = function(controller) {
         next();
 
     });
+  
+
     // Validate user input: date
+    // make sure date is in desired format and format it for output back to user
     controller.studio.validate('Appointment','date', function(convo, next) {
 
         var value = convo.extractResponse('date');
@@ -124,11 +118,11 @@ module.exports = function(controller) {
     }); 
     var companyID;
     // Validate user input: company_name
+    //Make sure company is using our service
     controller.studio.validate('Appointment','company_name', function(convo, next) {
 
         var value = convo.extractResponse('company_name');
         console.log(value);
-        console.log("wtf");
         // test or validate value somehow
         // can call convo.gotoThread() to change direction of conversation
         Company.findOne({"name": value}, function(err,company){
@@ -141,17 +135,6 @@ module.exports = function(controller) {
            console.log(companyID);
          }
         });
-       /*controller.storage.companies.get(value, function(error, company){
-          if(!company){
-            convo.gotoThread('invalid_company');
-          }
-         else{
-           companyID = company._id;
-           console.log(company);
-           console.log(companyID);
-         }
-        });*/
-        
         // always call next!
         next();
 
@@ -340,53 +323,37 @@ module.exports = function(controller) {
     });
 
 
-    // define an after hook
-    // you may define multiple after hooks. they will run in the order they are defined.
-    // See: https://github.com/howdyai/botkit/blob/master/docs/readme-studio.md#controllerstudioafter
+    // Save the appointment to databse for checkn
     controller.studio.after('Appointment', function(convo, next) {
 
         console.log('AFTER: Appointment');
-
         // handle the outcome of the convo
         if (convo.successful()) {
-
             var responses = convo.extractResponses();
             // do something with the responses
-          //Format of mongo appointment
-            /*  "provider_name": "test test",
-    "company_id": {
-        "$oid": "591b86b29db7de80f77262d4"
-    },
-    "date": {
-        "$date": "2016-04-23T18:25:43.511Z"
-    },
-    "phone_number": "1234567890",
-    "last_name": "test",
-    "first_name": "test",
-    "__v": 0*/
+          //Make an appointment to add to database
           var name= responses.name.split(" ");
-          //need function to format date actually
-         // var formattedDate = '2017-06-13T18:25:43.511Z'
+
           var inputDate = (new Date(jsDate(responses.date, responses.date_time)));
-          console.log(inputDate);
           var formattedDate = inputDate;
-          console.log(formattedDate);
-          console.log(inputDate.toISOString());
-          console.log(inputDate.toUTCString());
-          formattedDate = new Date(inputDate.toISOString().replace("Z", "-07:00")).toISOString().replace(".000", "");
-          console.log(formattedDate);
-          //console.log(formattedDate.toISOString());
+          formattedDate = toTimeZone(inputDate,"Antarctica/Davis");
+          formattedDate = new Date(formattedDate);
+          //store time in correct format for database accounting for time zone.
           var appointment = {provider_name: responses.provider,  company_id: companyID, date: [formattedDate],
           phone_number: responses.phone, last_name: name[1], first_name:name[0], __v: 0, id: name + Math.random(), 
                             company_name: responses.company_name}
           controller.storage.appointments.save(appointment);
-    
         }
 
         // don't forget to call next, or your conversation will never properly complete.
         next();
     });
-  
+  function toTimeZone(time, zone) {
+    //console.log(time);
+    time = time.toISOString();
+    var format = 'YYYY-MM-DD HH:mm ';
+    return moment(time, format).tz(zone).format(format);
+  }
    function jsDate(date, time) {
     const jsDate = reFormatDate(date);
     const jsTime = reFormatTime(time);
