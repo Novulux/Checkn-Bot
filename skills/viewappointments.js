@@ -1,11 +1,12 @@
-/*
+  /*
 
 Botkit Studio Skill module to enhance the "View Appointments" script
 
 */
 
 var Appointment = require('../models/Appointment');
-
+var formatting = require ('./skill_module.js');
+var moment = require('moment-timezone');
 module.exports = function(controller) {
     // define a before hook
     // you may define multiple before hooks. they will run in the order they are defined.
@@ -47,10 +48,11 @@ module.exports = function(controller) {
 
         var value = convo.extractResponse('newdate');
 
+      
         // test or validate value somehow
         // can call convo.gotoThread() to change direction of conversation
-
         console.log('VALIDATE: View Appointments VARIABLE: newdate');
+
 
         // always call next!
         next();
@@ -92,6 +94,7 @@ module.exports = function(controller) {
         if(!(parseInt(value) > 0 && parseInt(value) <= allAppointments.length)){
             convo.gotoThread('invalid');
         }
+
         // test or validate value somehow
         // can call convo.gotoThread() to change direction of conversation
 
@@ -116,9 +119,7 @@ var allAppointments;
           console.err(err);
         }
         else{
-
           allAppointments = appointments;
-
           if(appointments.length == 0){
             convo.gotoThread('no appointments');
           }
@@ -132,7 +133,8 @@ var allAppointments;
             
               appointmentData.prototype.toString = function dataToString() {
               var time = this.date.split(',');
-              var date = (new Date(this.date)).toDateString();
+              var date = moment(this.date).tz("America/Los_Angeles").format("dddd MMM DD YYYY");
+            
               var ret = ". #" +this.number + ": " + this.company + ' at ' + date + "," +time[1];
               return ret;
             }
@@ -140,11 +142,10 @@ var allAppointments;
               console.log(appointments[i].company_name);
               //var displayDate = new Date(appointments[i].date.toLocaleString('en-US', { hour12: true, timeZone: 'America/Los_Angeles', timeZoneName:'short' }));
               var displayDate = appointments[i].date.toLocaleString('en-US', { hour12: true, timeZone: 'America/Los_Angeles', timeZoneName:'short' });
-              console.log(displayDate);
+              console.log("Display date is %s",displayDate);
              // var displayTime = displayDate.getTime();
               //displayDate = displayDate.toDateString();
               
-              console.log(displayDate);
               var data = new appointmentData(appointments[i].company_name, displayDate, i +1);
               data = data.toString();
               entries.push(data);
@@ -302,7 +303,6 @@ var allAppointments;
         // convo.setVar('name','value');
 
         console.log('In the script *View Appointments*, about to start the thread *invalid*');
-
         // always call next!
         next();
     });
@@ -316,12 +316,76 @@ var allAppointments;
         // handle the outcome of the convo
         if (convo.successful()) {
 
-            var responses = convo.extractResponses();
+          var responses = convo.extractResponses();
             // do something with the responses
+          var idToEdit = allAppointments[responses.edit-1]._id;
+          var inputDate = (new Date(jsDate(responses.newdate, responses.newtime)));
+          //adjust from -7 of Los Angeles...this bot reads time differently from our site, but still want to store the same.
+          var formattedDate = toTimeZone(inputDate,"Antarctica/Davis");
+          formattedDate = new Date(formattedDate);
 
-        }
+          //var formattedDate = new Date(inputDate.toISOString().replace("Z", "-07:00")).toISOString().replace(".000", "");
+          // test or validate value somehow
+          // can call convo.gotoThread() to change direction of conversation
+          console.log('VALIDATE: View Appointments VARIABLE: newdate');
+          Appointment.updateOne({ _id: idToEdit }, { $set: { date: [formattedDate]}}).exec();
+          }
 
         // don't forget to call next, or your conversation will never properly complete.
         next();
     });
+    function toTimeZone(time, zone) {
+    time = time.toISOString();
+    var format = 'YYYY-MM-DD HH:mm';
+    return moment(time, format).tz(zone).format(format);
+  }
+     function jsDate(date, time) {
+    const jsDate = reFormatDate(date);
+    const jsTime = reFormatTime(time);
+    var jsDateObj = `${jsDate} ${jsTime}`;
+    return jsDateObj;
+  }
+
+    // FUNCTION TO FORMAT DATE TO JS FOR ROBOTS
+  function reFormatDate(date) {
+    const d= new Date(Date.parse(date));
+    let mm = d.getMonth() + 1;
+    const yyyy = d.getFullYear();
+    let dd = d.getDate();
+
+    if (dd < 10) {
+      dd = `0${dd}`;
+    }
+    if (mm < 10) {
+      mm = `0${mm}`;
+    }
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
+
+    // FUNCTION TO FORMAT TIME TO JS FOR ROBOTS
+  function reFormatTime(time) {
+    const ampm = time.substr(-2, 2);
+    let formattedTime;
+    let formattedHour;
+    const colon = time.indexOf(':');
+
+    if (ampm === 'PM') {
+      formattedHour = time.substr(0, 2);
+
+      if (formattedHour == '12') { formattedHour = 12; } else { formattedHour = 12 + parseInt(time.substr(0, 2)); }
+
+      formattedTime = `${formattedHour + time.substr(colon, 3)}:00`;
+    } else {
+      formattedHour = parseInt(time.substr(0, 2));
+      if (formattedHour < 10) {
+        formattedHour = `0${formattedHour}`;
+      }
+      if (formattedHour == 12) {
+        formattedHour = '00';
+      }
+      formattedTime = `${formattedHour + time.substr(colon, 3)}:00`;
+    }
+    return formattedTime;
+  }
 }
