@@ -312,7 +312,7 @@ module.exports = function(controller) {
         console.log('AFTER: View Appointments');
 
         // edits the appointment
-        if (convo.successful() && responses.edit) {
+        if (convo.successful()) {
 
           var responses = convo.extractResponses();
           // do something with the responses
