@@ -340,14 +340,12 @@ module.exports = function(controller) {
 
         // handle the outcome of the convo
         if (convo.successful()) {
-
             var responses = convo.extractResponses();
             // do something with the responses
           //Make an appointment to add to database
           var name= responses.name.split(" ");
 
           var inputDate = (new Date(jsDate(responses.date, responses.date_time)));
-
           var formattedDate = inputDate;
           formattedDate = toTimeZone(inputDate,"Antarctica/Davis");
           formattedDate = new Date(formattedDate);
