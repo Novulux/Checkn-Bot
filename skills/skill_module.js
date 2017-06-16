@@ -48,16 +48,6 @@ module.exports = function(controller) {
 
         var value = convo.extractResponse('provider');
       
-    /*  Appointment.findOne({ first_name: 'Ronald' }, function (err, appointment) {
-        if (err) {
-          console.err(err);
-        }
-        else{
-          console.log("here");
-          console.log(appointment);
-          console.log(appointment.date);
-        }
-      });*/
         // test or validate value somehow
         // can call convo.gotoThread() to change direction of conversation
 
@@ -70,6 +60,7 @@ module.exports = function(controller) {
   
 
     // Validate user input: date
+    // make sure date is in desired format and format it for output back to user
     controller.studio.validate('Appointment','date', function(convo, next) {
 
         var value = convo.extractResponse('date');
@@ -127,6 +118,7 @@ module.exports = function(controller) {
     }); 
     var companyID;
     // Validate user input: company_name
+    //Make sure company is using our service
     controller.studio.validate('Appointment','company_name', function(convo, next) {
 
         var value = convo.extractResponse('company_name');
@@ -331,13 +323,10 @@ module.exports = function(controller) {
     });
 
 
-    // define an after hook
-    // you may define multiple after hooks. they will run in the order they are defined.
-    // See: https://github.com/howdyai/botkit/blob/master/docs/readme-studio.md#controllerstudioafter
+    // Save the appointment to databse for checkn
     controller.studio.after('Appointment', function(convo, next) {
 
         console.log('AFTER: Appointment');
-
         // handle the outcome of the convo
         if (convo.successful()) {
             var responses = convo.extractResponses();
@@ -349,8 +338,7 @@ module.exports = function(controller) {
           var formattedDate = inputDate;
           formattedDate = toTimeZone(inputDate,"Antarctica/Davis");
           formattedDate = new Date(formattedDate);
-          //formattedDate = new Date(inputDate.toISOString().replace("Z", "-07:00")).toISOString().replace(".000", "");
-          //console.log(formattedDate);
+          //store time in correct format for database accounting for time zone.
           var appointment = {provider_name: responses.provider,  company_id: companyID, date: [formattedDate],
           phone_number: responses.phone, last_name: name[1], first_name:name[0], __v: 0, id: name + Math.random(), 
                             company_name: responses.company_name}

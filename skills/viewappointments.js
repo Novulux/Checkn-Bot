@@ -60,6 +60,7 @@ module.exports = function(controller) {
     });
   
     // Validate user input: todelete
+    //deletes an appointment for the user
     controller.studio.validate('View Appointments','todelete', function(convo, next) {
 
         var value = convo.extractResponse('todelete');
@@ -103,11 +104,11 @@ module.exports = function(controller) {
         // always call next!
         next();
     });
-var allAppointments;
+    var allAppointments; //all appointments in json form
     // Validate user input: identity
     controller.studio.validate('View Appointments','identity', function(convo, next) {
 
-        var value = convo.extractResponse('identity');
+        var value = convo.extractResponse('identity'); //phone number to give user identity
 
         // test or validate value somehow
         // can call convo.gotoThread() to change direction of conversation
@@ -130,7 +131,7 @@ var allAppointments;
               this.date = date;
               this.number = number;
             }
-            
+              //format to display data from appointments to user
               appointmentData.prototype.toString = function dataToString() {
               var time = this.date.split(',');
               var date = moment(this.date).tz("America/Los_Angeles").format("dddd MMM DD YYYY");
@@ -138,13 +139,12 @@ var allAppointments;
               var ret = ". #" +this.number + ": " + this.company + ' at ' + date + "," +time[1];
               return ret;
             }
+              //get the desired data from each appointment
             for(var i = 0; i < appointments.length; i++){
               console.log(appointments[i].company_name);
               //var displayDate = new Date(appointments[i].date.toLocaleString('en-US', { hour12: true, timeZone: 'America/Los_Angeles', timeZoneName:'short' }));
               var displayDate = appointments[i].date.toLocaleString('en-US', { hour12: true, timeZone: 'America/Los_Angeles', timeZoneName:'short' });
               console.log("Display date is %s",displayDate);
-             // var displayTime = displayDate.getTime();
-              //displayDate = displayDate.toDateString();
               
               var data = new appointmentData(appointments[i].company_name, displayDate, i +1);
               data = data.toString();
@@ -306,18 +306,17 @@ var allAppointments;
         // always call next!
         next();
     });
-    // define an after hook
-    // you may define multiple after hooks. they will run in the order they are defined.
-    // See: https://github.com/howdyai/botkit/blob/master/docs/readme-studio.md#controllerstudioafter
+    //edit data 
     controller.studio.after('View Appointments', function(convo, next) {
 
         console.log('AFTER: View Appointments');
 
-        // handle the outcome of the convo
-        if (convo.successful()) {
+        // edits the appointment
+        if (convo.successful() && responses.edit) {
 
           var responses = convo.extractResponses();
-            // do something with the responses
+          // do something with the responses
+          //get the id of the correct appointment
           var idToEdit = allAppointments[responses.edit-1]._id;
           var inputDate = (new Date(jsDate(responses.newdate, responses.newtime)));
           //adjust from -7 of Los Angeles...this bot reads time differently from our site, but still want to store the same.
@@ -325,7 +324,7 @@ var allAppointments;
           formattedDate = new Date(formattedDate);
 
           //var formattedDate = new Date(inputDate.toISOString().replace("Z", "-07:00")).toISOString().replace(".000", "");
-          // test or validate value somehow
+
           // can call convo.gotoThread() to change direction of conversation
           console.log('VALIDATE: View Appointments VARIABLE: newdate');
           Appointment.updateOne({ _id: idToEdit }, { $set: { date: [formattedDate]}}).exec();
@@ -334,12 +333,14 @@ var allAppointments;
         // don't forget to call next, or your conversation will never properly complete.
         next();
     });
+    //adjust for timezone
     function toTimeZone(time, zone) {
     time = time.toISOString();
     var format = 'YYYY-MM-DD HH:mm';
     return moment(time, format).tz(zone).format(format);
   }
-     function jsDate(date, time) {
+   //gets date and time from inputs
+    function jsDate(date, time) {
     const jsDate = reFormatDate(date);
     const jsTime = reFormatTime(time);
     var jsDateObj = `${jsDate} ${jsTime}`;
