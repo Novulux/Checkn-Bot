@@ -6,7 +6,7 @@ For: https://lucky13-dev.herokuapp.com/
 
 Say some greeting (hello) to begin. 
 Bot used for appointments on facebook, if user replies no, it will ask for phone number for purpose of looking up user appointments to edit or delete. 
-Right now making appointments has validation for whether a company actually uses our service as well as date format validation. Saves directly to database from hosted site.
+Right now making appointments has validation for whether a company actually uses our service as well as date format (MM/DD/YYYY or MM-DD-YYYY) validation. Saves directly to database from hosted site.
 
 I am using https://glitch.com/edit/#!/sweltering-bit
 
