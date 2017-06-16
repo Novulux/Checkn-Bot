@@ -1,0 +1,302 @@
+[
+    {
+        "command": "View Appointments",
+        "description": "view appointments for this user",
+        "triggers": [
+            {
+                "pattern": "view appointments",
+                "type": "string",
+                "id": 84
+            },
+            {
+                "pattern": "view",
+                "type": "string",
+                "id": 5
+            },
+            {
+                "pattern": "negative response",
+                "type": "intent",
+                "id": 63
+            },
+            {
+                "type": "string",
+                "pattern": "View Appointments"
+            }
+        ],
+        "variables": [
+            {
+                "name": "todelete",
+                "type": "string",
+                "id": 209
+            },
+            {
+                "name": "newtime",
+                "type": "string",
+                "id": 97
+            },
+            {
+                "name": "newdate",
+                "type": "string",
+                "id": 198
+            },
+            {
+                "name": "edit",
+                "type": "string",
+                "id": 340
+            },
+            {
+                "name": "identity",
+                "type": "string",
+                "id": 64
+            },
+            {
+                "name": "question_1",
+                "type": "string"
+            },
+            {
+                "name": "question_2",
+                "type": "string"
+            },
+            {
+                "name": "question_3",
+                "type": "string"
+            }
+        ],
+        "script": [
+            {
+                "topic": "default",
+                "script": [
+                    {
+                        "text": [
+                            "What is your phone number?"
+                        ],
+                        "collect": {
+                            "key": "identity",
+                            "options": [
+                                {
+                                    "default": true,
+                                    "pattern": "default",
+                                    "action": "next"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "action": "complete"
+                    }
+                ]
+            },
+            {
+                "topic": "on_timeout",
+                "script": [
+                    {
+                        "text": [
+                            "Looks like you got distracted. We can continue later."
+                        ]
+                    },
+                    {
+                        "action": "timeout"
+                    }
+                ]
+            },
+            {
+                "topic": "no appointments",
+                "script": [
+                    {
+                        "text": [
+                            "You have no appointments to update."
+                        ]
+                    },
+                    {
+                        "action": "complete"
+                    }
+                ]
+            },
+            {
+                "topic": "have appointments",
+                "script": [
+                    {
+                        "text": [
+                            "Here are your appointments: {{vars.list}}"
+                        ]
+                    },
+                    {
+                        "text": [
+                            "Would you like to edit or delete an appointment?"
+                        ],
+                        "collect": {
+                            "key": "question_1",
+                            "options": [
+                                {
+                                    "default": true,
+                                    "pattern": "default",
+                                    "action": "next"
+                                },
+                                {
+                                    "pattern": "no",
+                                    "type": "utterance",
+                                    "action": "next"
+                                },
+                                {
+                                    "pattern": "edit",
+                                    "type": "string",
+                                    "action": "edit"
+                                },
+                                {
+                                    "pattern": "delete",
+                                    "type": "string",
+                                    "action": "delete"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "action": "complete"
+                    }
+                ]
+            },
+            {
+                "topic": "delete",
+                "script": [
+                    {
+                        "text": [
+                            "Please give the number of the appointment to delete."
+                        ],
+                        "collect": {
+                            "key": "todelete",
+                            "options": [
+                                {
+                                    "default": true,
+                                    "pattern": "default",
+                                    "action": "next"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "action": "deleted"
+                    }
+                ]
+            },
+            {
+                "topic": "edit",
+                "script": [
+                    {
+                        "text": [
+                            "Please give the number of the appointment to edit"
+                        ],
+                        "collect": {
+                            "key": "edit",
+                            "options": [
+                                {
+                                    "default": true,
+                                    "pattern": "default",
+                                    "action": "next"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "text": [
+                            "What is the new date?"
+                        ],
+                        "collect": {
+                            "key": "newdate",
+                            "options": [
+                                {
+                                    "default": true,
+                                    "pattern": "default",
+                                    "action": "next"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "text": [
+                            "What is the new time?"
+                        ],
+                        "collect": {
+                            "key": "newtime",
+                            "options": [
+                                {
+                                    "default": true,
+                                    "pattern": "default",
+                                    "action": "next"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "action": "edited"
+                    }
+                ]
+            },
+            {
+                "topic": "deleted",
+                "script": [
+                    {
+                        "text": [
+                            "Appointment deleted"
+                        ]
+                    },
+                    {
+                        "action": "done"
+                    }
+                ]
+            },
+            {
+                "topic": "invalid",
+                "script": [
+                    {
+                        "text": [
+                            "Not a valid appointment number."
+                        ]
+                    },
+                    {
+                        "action": "have appointments"
+                    }
+                ]
+            },
+            {
+                "topic": "invalid date",
+                "script": [
+                    {
+                        "text": [
+                            "This is an invalid date, please use DD-MM-YYYY or DD/MM/YYYY."
+                        ]
+                    },
+                    {
+                        "action": "edit"
+                    }
+                ]
+            },
+            {
+                "topic": "done",
+                "script": [
+                    {
+                        "text": [
+                            "Say hi if you want to do anything else."
+                        ]
+                    },
+                    {
+                        "action": "complete"
+                    }
+                ]
+            },
+            {
+                "topic": "edited",
+                "script": [
+                    {
+                        "text": [
+                            "This appointment has been set at the new time."
+                        ]
+                    },
+                    {
+                        "action": "done"
+                    }
+                ]
+            }
+        ],
+        "modified": "Fri Jun 16 2017 09:47:36 GMT+0000 (UTC)"
+    }
+]

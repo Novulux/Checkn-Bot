@@ -1,0 +1,277 @@
+[
+    {
+        "command": "Appointment",
+        "description": "Lets user make an appointment",
+        "triggers": [
+            {
+                "pattern": "positive response",
+                "type": "intent",
+                "id": 473
+            },
+            {
+                "pattern": "appointment",
+                "type": "intent",
+                "id": 193
+            },
+            {
+                "type": "string",
+                "pattern": "Appointment"
+            }
+        ],
+        "variables": [
+            {
+                "name": "phone",
+                "type": "string",
+                "id": 469
+            },
+            {
+                "name": "provider",
+                "type": "string",
+                "id": 430
+            },
+            {
+                "name": "date",
+                "type": "string",
+                "id": 9
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "id": 476
+            },
+            {
+                "name": "date_time",
+                "type": "string",
+                "id": 414
+            },
+            {
+                "name": "company_name",
+                "type": "string",
+                "id": 493
+            },
+            {
+                "name": "question_1",
+                "type": "string"
+            },
+            {
+                "name": "question_2",
+                "type": "string"
+            },
+            {
+                "name": "question_3",
+                "type": "string"
+            }
+        ],
+        "script": [
+            {
+                "topic": "default",
+                "script": [
+                    {
+                        "text": [
+                            "What company would you like to make an appointment with?"
+                        ],
+                        "collect": {
+                            "key": "company_name",
+                            "options": [
+                                {
+                                    "default": true,
+                                    "pattern": "default",
+                                    "action": "name"
+                                },
+                                {
+                                    "pattern": "Company",
+                                    "type": "regex",
+                                    "action": "name"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "action": "complete"
+                    }
+                ]
+            },
+            {
+                "topic": "on_timeout",
+                "script": [
+                    {
+                        "text": [
+                            "Looks like you got distracted. We can continue later."
+                        ]
+                    },
+                    {
+                        "action": "complete"
+                    }
+                ]
+            },
+            {
+                "topic": "invalid_company",
+                "script": [
+                    {
+                        "text": [
+                            "The company {{responses.company_name}} does not use our service. Please try again or encourage them to do so."
+                        ]
+                    },
+                    {
+                        "action": "default"
+                    }
+                ]
+            },
+            {
+                "topic": "name",
+                "script": [
+                    {
+                        "text": [
+                            "What is your first and last name?"
+                        ],
+                        "collect": {
+                            "key": "name",
+                            "options": [
+                                {
+                                    "default": true,
+                                    "pattern": "default",
+                                    "action": "next"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "action": "date"
+                    }
+                ]
+            },
+            {
+                "topic": "date",
+                "script": [
+                    {
+                        "text": [
+                            "What day do you want your appointment?"
+                        ],
+                        "collect": {
+                            "key": "date",
+                            "options": [
+                                {
+                                    "default": true,
+                                    "pattern": "default",
+                                    "action": "next"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "action": "time"
+                    }
+                ]
+            },
+            {
+                "topic": "invalid_date",
+                "script": [
+                    {
+                        "text": [
+                            "This day does not exist. Please use (DD/MM/YYYY format) if it does."
+                        ]
+                    },
+                    {
+                        "action": "date"
+                    }
+                ]
+            },
+            {
+                "topic": "time",
+                "script": [
+                    {
+                        "text": [
+                            "What time during {{vars.date}} do you want to schedule the appointment?"
+                        ],
+                        "collect": {
+                            "key": "date_time",
+                            "options": [
+                                {
+                                    "default": true,
+                                    "pattern": "default",
+                                    "action": "next"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "action": "provider"
+                    }
+                ]
+            },
+            {
+                "topic": "invalid_time",
+                "script": [
+                    {
+                        "text": [
+                            "This is an invalid time. Please use format like 11:30 PM if needed."
+                        ]
+                    },
+                    {
+                        "action": "time"
+                    }
+                ]
+            },
+            {
+                "topic": "provider",
+                "script": [
+                    {
+                        "text": [
+                            "Who is your provider?"
+                        ],
+                        "collect": {
+                            "key": "provider",
+                            "options": [
+                                {
+                                    "default": true,
+                                    "pattern": "default",
+                                    "action": "next"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "action": "phone"
+                    }
+                ]
+            },
+            {
+                "topic": "phone",
+                "script": [
+                    {
+                        "text": [
+                            "What is your phone number?"
+                        ],
+                        "collect": {
+                            "key": "phone",
+                            "options": [
+                                {
+                                    "default": true,
+                                    "pattern": "default",
+                                    "action": "next"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "action": "thanks"
+                    }
+                ]
+            },
+            {
+                "topic": "thanks",
+                "script": [
+                    {
+                        "text": [
+                            "Thanks {{responses.name}} , your appointment for {{responses.company_name}} has been set at {{responses.date_time}} on {{vars.date}}."
+                        ]
+                    },
+                    {
+                        "action": "complete"
+                    }
+                ]
+            }
+        ],
+        "modified": "Fri Jun 16 2017 09:48:04 GMT+0000 (UTC)"
+    }
+]
