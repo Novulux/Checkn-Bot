@@ -26,6 +26,7 @@ verify_token=MAKEYOUROWN
 studio_token=FROMBOTKITSTUDIO
 PORT=3000
 ```
+If using MongoDB, you should also place the mongoURI there for safety reasons, even though I did not currently (whoops). 
 Setup the Facebook page with webhook url, for example I had: https://sweltering-bit.glitch.me/facebook/receive and the verify_token.
 
 There is middleware for api.ai available for Botkit but we couldn't implement in time. 
